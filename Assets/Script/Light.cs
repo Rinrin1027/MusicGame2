@@ -1,49 +1,77 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Light : MonoBehaviour
 {
-    [SerializeField] private float Speed = 3;
+    [SerializeField] private float speed = 3f;
     [SerializeField] private int num = 0;
     private Renderer rend;
-    private float alfa = 0;
+    private float alpha = 0f;
 
-    void Start()
+    private void Start()
     {
         rend = GetComponent<Renderer>();
     }
 
-    void Update()
+    private void Update()
     {
-        if (!(rend.material.color.a <= 0))
+        if (!(rend.material.color.a <= 0f))
         {
-            rend.material.color = new Color(rend.material.color.r, rend.material.color.r, rend.material.color.r, alfa);
+            rend.material.color = new Color(rend.material.color.r, rend.material.color.g, rend.material.color.b, alpha);
         }
 
-        // キーボード入力の監視
-        if (num == 1 && Input.GetKeyDown(KeyCode.D))
+        if (num == 1 && (Input.GetKeyDown(KeyCode.D) || IsTouched()))
         {
             colorChange();
         }
-        else if (num == 2 && Input.GetKeyDown(KeyCode.F))
+        else if (num == 2 && (Input.GetKeyDown(KeyCode.F) || IsTouched()))
         {
             colorChange();
         }
-        else if (num == 3 && Input.GetKeyDown(KeyCode.J))
+        else if (num == 3 && (Input.GetKeyDown(KeyCode.J) || IsTouched()))
         {
             colorChange();
         }
-        else if (num == 4 && Input.GetKeyDown(KeyCode.K))
+        else if (num == 4 && (Input.GetKeyDown(KeyCode.K) || IsTouched()))
         {
             colorChange();
         }
 
-        alfa -= Speed * Time.deltaTime;
+        alpha -= speed * Time.deltaTime;
     }
 
     public void colorChange()
     {
-        alfa = 0.3f;
-        rend.material.color = new Color(rend.material.color.r, rend.material.color.g, rend.material.color.b, alfa);
+        alpha = 0.3f;
+        rend.material.color = new Color(rend.material.color.r, rend.material.color.g, rend.material.color.b, alpha);
+    }
+
+    private bool IsTouched()
+    {
+        if (Input.touchCount > 0)
+        {
+            foreach (Touch touch in Input.touches)
+            {
+                if (touch.phase == TouchPhase.Began)
+                {
+                    // タッチ座標をスクリーン座標に変換
+                    Vector2 touchPosition = touch.position;
+
+                    // Raycastを使用してタッチ位置をワールド座標に変換
+                    Ray ray = Camera.main.ScreenPointToRay(touchPosition);
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        if (hit.collider.gameObject == gameObject && num == hit.collider.GetComponent<Light>().num)
+                        {
+                            // タッチ位置がこのオブジェクトに当たり、numが一致する場合、このタッチは有効とみなす
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
