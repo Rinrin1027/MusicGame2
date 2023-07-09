@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class Judge : MonoBehaviour
 {
@@ -13,6 +14,13 @@ public class Judge : MonoBehaviour
     [SerializeField] private GameObject light2;
     [SerializeField] private GameObject light3;
     [SerializeField] private GameObject light4;
+
+    private Dictionary<int, KeyCode> touchLaneMapping; // タッチIDとレーンのマッピング
+
+    private void Start()
+    {
+        touchLaneMapping = new Dictionary<int, KeyCode>();
+    }
 
     private void FixedUpdate()
     {
@@ -54,25 +62,31 @@ public class Judge : MonoBehaviour
 
     private bool IsTouchingObject(GameObject targetObject)
     {
-        // Raycastを使用して指定されたオブジェクトに触れているかどうかを判定する
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
-        if (Physics.Raycast(ray, out hit))
+        float closestDistance = Mathf.Infinity;
+        GameObject closestObject = null;
+
+        for (int i = 0; i < hits.Length; i++)
         {
-            return hit.collider.gameObject == targetObject;
+            RaycastHit hit = hits[i];
+            if (hit.collider.gameObject == targetObject && hit.distance < closestDistance)
+            {
+                closestDistance = hit.distance;
+                closestObject = hit.collider.gameObject;
+            }
         }
 
-        return false;
+        return closestObject == targetObject;
     }
-
 
     private void ProcessTouchInput()
     {
         // レイキャストを使用してタッチ入力を処理する
-        if (Input.touchCount > 0)
+        for (int i = 0; i < Input.touchCount; i++)
         {
-            Touch touch = Input.GetTouch(0);
+            Touch touch = Input.GetTouch(i);
 
             if (touch.phase == TouchPhase.Began)
             {
@@ -93,21 +107,33 @@ public class Judge : MonoBehaviour
                     ProcessInput(KeyCode.K, 3);
                 }
             }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                if (touchLaneMapping.ContainsKey(touch.fingerId))
+                {
+                    KeyCode laneKeyCode = touchLaneMapping[touch.fingerId];
+                    touchLaneMapping.Remove(touch.fingerId);
+
+                    ProcessInput(laneKeyCode, -1);
+                }
+            }
         }
     }
 
     public void ProcessInput(KeyCode keyCode, int laneIndex)
     {
-        // レーンに対応するオフセットを取得する
-        int numOffset = FindLaneOffset(laneIndex);
+        // レーンに対応するオフセットを全て取得する
+        List<int> offsets = FindLaneOffsets(laneIndex);
 
-        if (numOffset >= 0)
+        // オフセットのリストが空であれば処理を中断する
+        if (offsets.Count == 0)
+            return;
+
+        foreach (int numOffset in offsets)
         {
             float timeLag = GetTimeLag(numOffset);
 
             // ノーツに対する判定を行う
-            audioSource.PlayOneShot(hitSound);
-
             if (timeLag <= 0.1f)
                 HandleJudgement(0, numOffset); // パーフェクト判定
             else if (timeLag <= 0.15f)
@@ -115,23 +141,26 @@ public class Judge : MonoBehaviour
             else if (timeLag <= 0.2f)
                 HandleJudgement(2, numOffset); // ノーマル判定
         }
+
+        // ノーツに対応する音を再生する
+        audioSource.PlayOneShot(hitSound);
     }
 
-    private int FindLaneOffset(int laneIndex)
+
+    private List<int> FindLaneOffsets(int laneIndex)
     {
-        // レーンに対応するオフセットを検索する
-        int offset = -1;
+        // レーンに対応するオフセットのリストを作成する
+        List<int> offsets = new List<int>();
 
         for (int i = 0; i < notesManager.LaneNum.Count; i++)
         {
             if (notesManager.LaneNum[i] == laneIndex)
             {
-                offset = i;
-                break;
+                offsets.Add(i);
             }
         }
 
-        return offset;
+        return offsets;
     }
 
     private float GetTimeLag(int numOffset)
