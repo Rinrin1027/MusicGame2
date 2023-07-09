@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4384b5b6fe3294c47a88cc1e97c61941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 5
+  speed: 3
   num: 4
 --- !u!1 &128601997
 GameObject:
@@ -480,7 +480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4384b5b6fe3294c47a88cc1e97c61941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 5
+  speed: 3
   num: 1
 --- !u!1 &228041858
 GameObject:
@@ -786,6 +786,10 @@ MonoBehaviour:
   scoreText: {fileID: 1912203934}
   audioSource: {fileID: 2034458318}
   hitSound: {fileID: 8300000, guid: 90d5335c3d3754b879d398af42fc8198, type: 3}
+  light1: {fileID: 187457111}
+  light2: {fileID: 1821978122}
+  light3: {fileID: 2064273507}
+  light4: {fileID: 100579197}
 --- !u!82 &593612963
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3014,7 +3018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4384b5b6fe3294c47a88cc1e97c61941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 5
+  speed: 3
   num: 2
 --- !u!1 &1912203932
 GameObject:
@@ -3402,7 +3406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4384b5b6fe3294c47a88cc1e97c61941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 5
+  speed: 3
   num: 3
 --- !u!1001 &148036940489001733
 PrefabInstance:

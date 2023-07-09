@@ -9,6 +9,10 @@ public class Judge : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip hitSound;
+    [SerializeField] private GameObject light1;
+    [SerializeField] private GameObject light2;
+    [SerializeField] private GameObject light3;
+    [SerializeField] private GameObject light4;
 
     private void FixedUpdate()
     {
@@ -19,6 +23,9 @@ public class Judge : MonoBehaviour
         // キーボードの入力を処理する
         ProcessKeyboardInput();
 
+        // タッチの入力を処理する
+        ProcessTouchInput();
+
         // ノーツのタイミングをチェックし、ミス判定を行う
         if (notesManager.NotesTime.Count > 0 && Time.time > notesManager.NotesTime[0] + 0.2f + GManager.instance.StartTime)
             HandleMiss();
@@ -27,45 +34,86 @@ public class Judge : MonoBehaviour
     private void ProcessKeyboardInput()
     {
         // 各レーンのキーボード入力を処理する
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.D) || (Input.GetKey(KeyCode.D) && IsTouchingObject(light1)))
         {
             ProcessInput(KeyCode.D, 0);
         }
-        else if (Input.GetKeyDown(KeyCode.F))
+        else if (Input.GetKeyDown(KeyCode.F) || (Input.GetKey(KeyCode.F) && IsTouchingObject(light2)))
         {
             ProcessInput(KeyCode.F, 1);
         }
-        else if (Input.GetKeyDown(KeyCode.J))
+        else if (Input.GetKeyDown(KeyCode.J) || (Input.GetKey(KeyCode.J) && IsTouchingObject(light3)))
         {
             ProcessInput(KeyCode.J, 2);
         }
-        else if (Input.GetKeyDown(KeyCode.K))
+        else if (Input.GetKeyDown(KeyCode.K) || (Input.GetKey(KeyCode.K) && IsTouchingObject(light4)))
         {
             ProcessInput(KeyCode.K, 3);
         }
     }
 
+    private bool IsTouchingObject(GameObject targetObject)
+    {
+        // Raycastを使用して指定されたオブジェクトに触れているかどうかを判定する
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.collider.gameObject == targetObject;
+        }
+
+        return false;
+    }
+
+
+    private void ProcessTouchInput()
+    {
+        // レイキャストを使用してタッチ入力を処理する
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                if (IsTouchingObject(light1))
+                {
+                    ProcessInput(KeyCode.D, 0);
+                }
+                else if (IsTouchingObject(light2))
+                {
+                    ProcessInput(KeyCode.F, 1);
+                }
+                else if (IsTouchingObject(light3))
+                {
+                    ProcessInput(KeyCode.J, 2);
+                }
+                else if (IsTouchingObject(light4))
+                {
+                    ProcessInput(KeyCode.K, 3);
+                }
+            }
+        }
+    }
+
     public void ProcessInput(KeyCode keyCode, int laneIndex)
     {
-        if (Input.GetKeyDown(keyCode))
+        // レーンに対応するオフセットを取得する
+        int numOffset = FindLaneOffset(laneIndex);
+
+        if (numOffset >= 0)
         {
-            // レーンに対応するオフセットを取得する
-            int numOffset = FindLaneOffset(laneIndex);
+            float timeLag = GetTimeLag(numOffset);
 
-            if (numOffset >= 0)
-            {
-                float timeLag = GetTimeLag(numOffset);
+            // ノーツに対する判定を行う
+            audioSource.PlayOneShot(hitSound);
 
-                // ノーツに対する判定を行う
-                audioSource.PlayOneShot(hitSound);
-
-                if (timeLag <= 0.1f)
-                    HandleJudgement(0, numOffset); // パーフェクト判定
-                else if (timeLag <= 0.15f)
-                    HandleJudgement(1, numOffset); // グッド判定
-                else if (timeLag <= 0.2f)
-                    HandleJudgement(2, numOffset); // ノーマル判定
-            }
+            if (timeLag <= 0.1f)
+                HandleJudgement(0, numOffset); // パーフェクト判定
+            else if (timeLag <= 0.15f)
+                HandleJudgement(1, numOffset); // グッド判定
+            else if (timeLag <= 0.2f)
+                HandleJudgement(2, numOffset); // ノーマル判定
         }
     }
 
