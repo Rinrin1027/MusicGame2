@@ -92,19 +92,19 @@ public class Judge : MonoBehaviour
             {
                 if (IsTouchingObject(light1))
                 {
-                    ProcessInput(KeyCode.D, 0);
+                    ProcessInput(KeyCode.D, 0, touch.fingerId);
                 }
                 else if (IsTouchingObject(light2))
                 {
-                    ProcessInput(KeyCode.F, 1);
+                    ProcessInput(KeyCode.F, 1, touch.fingerId);
                 }
                 else if (IsTouchingObject(light3))
                 {
-                    ProcessInput(KeyCode.J, 2);
+                    ProcessInput(KeyCode.J, 2, touch.fingerId);
                 }
                 else if (IsTouchingObject(light4))
                 {
-                    ProcessInput(KeyCode.K, 3);
+                    ProcessInput(KeyCode.K, 3, touch.fingerId);
                 }
             }
             else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
@@ -114,13 +114,13 @@ public class Judge : MonoBehaviour
                     KeyCode laneKeyCode = touchLaneMapping[touch.fingerId];
                     touchLaneMapping.Remove(touch.fingerId);
 
-                    ProcessInput(laneKeyCode, -1);
+                    ProcessInput(laneKeyCode, -1, touch.fingerId);
                 }
             }
         }
     }
 
-    public void ProcessInput(KeyCode keyCode, int laneIndex)
+    public void ProcessInput(KeyCode keyCode, int laneIndex, int touchId = -1)
     {
         // レーンに対応するオフセットを全て取得する
         List<int> offsets = FindLaneOffsets(laneIndex);
