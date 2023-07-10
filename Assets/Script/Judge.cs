@@ -129,22 +129,24 @@ public class Judge : MonoBehaviour
         if (offsets.Count == 0)
             return;
 
-        foreach (int numOffset in offsets)
+        for (int i = offsets.Count - 1; i >= 0; i--)
         {
+            int numOffset = offsets[i];
             float timeLag = GetTimeLag(numOffset);
 
             // ノーツに対する判定を行う
-            if (timeLag <= 0.1f)
+            if (timeLag <= 0.2f)
                 HandleJudgement(0, numOffset); // パーフェクト判定
-            else if (timeLag <= 0.15f)
+            else if (timeLag <= 0.3f)
                 HandleJudgement(1, numOffset); // グッド判定
-            else if (timeLag <= 0.2f)
+            else if (timeLag <= 0.4f)
                 HandleJudgement(2, numOffset); // ノーマル判定
         }
 
         // ノーツに対応する音を再生する
         audioSource.PlayOneShot(hitSound);
     }
+
 
 
     private List<int> FindLaneOffsets(int laneIndex)
