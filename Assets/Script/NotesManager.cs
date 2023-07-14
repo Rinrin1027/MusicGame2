@@ -38,7 +38,7 @@ public class NotesManager : MonoBehaviour
     {
         NotesSpeed = GManager.instance.noteSpeed;
         noteNum = 0;
-        songName = "maimai_pv";
+        songName = "Blossom";
         Load(songName);
     }
 

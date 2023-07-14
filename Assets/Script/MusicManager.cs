@@ -12,7 +12,7 @@ public class MusicManager : MonoBehaviour
     void Start()
     {
         GManager.instance.Start = false;
-        songName = "maimai_pv";
+        songName = "Blossom";
         audio = GetComponent<AudioSource>();
         Music = (AudioClip)Resources.Load("Musics/" + songName);
         played = false;
