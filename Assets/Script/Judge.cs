@@ -144,7 +144,7 @@ public class Judge : MonoBehaviour
         }
 
         // ノーツに対応する音を再生する
-        audioSource.PlayOneShot(hitSound);
+        //audioSource.PlayOneShot(hitSound);
     }
 
 
