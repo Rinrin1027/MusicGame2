@@ -28,7 +28,8 @@ public class RetryManager : MonoBehaviour
             buttonPressTime = Time.time;
             if (buttonPressCount >= pressThreshold)
             {
-                SceneManager.LoadScene("Homepart");
+                SceneManager.LoadScene("Homepart", LoadSceneMode.Single);
+
                 GManager.instance.score = 0;
                 GManager.instance.combo = 0;
                 GManager.instance.perfect = 0;
