@@ -23,46 +23,50 @@ public class Note
 
 public class NotesManager : MonoBehaviour
 {
-    public int noteNum;
-    private string songName;
+    public List<float>[] LaneNotesTimes { get; private set; }
+    public List<int>[] LaneNoteTypes { get; private set; }
 
-    public List<int> LaneNum = new List<int>();
-    public List<int> NoteType = new List<int>();
-    public List<float> NotesTime = new List<float>();
-    public List<GameObject> NotesObj = new List<GameObject>();
+    private Data songData;
 
-    private float NotesSpeed;
-    [SerializeField] GameObject noteObj;
+    public List<GameObject> NotesObj { get; private set; } = new List<GameObject>();
 
-    void OnEnable()
+    [SerializeField] private GameObject noteObj;
+
+    private void OnEnable()
     {
-        NotesSpeed = GManager.instance.noteSpeed;
-        noteNum = 0;
-        songName = "Blossom";
-        Load(songName);
+        LaneNotesTimes = new List<float>[4];
+        LaneNoteTypes = new List<int>[4];
+        for (int i = 0; i < 4; i++)
+        {
+            LaneNotesTimes[i] = new List<float>();
+            LaneNoteTypes[i] = new List<int>();
+        }
+
+        Load("Blossom");
     }
 
-    private void Load(string SongName)
+    private void Load(string songName)
     {
-        string inputString = Resources.Load<TextAsset>(SongName).ToString();
-        Data inputJson = JsonUtility.FromJson<Data>(inputString);
+        string inputString = Resources.Load<TextAsset>(songName).ToString();
+        songData = JsonUtility.FromJson<Data>(inputString);
 
-        noteNum = inputJson.notes.Length;
-        GManager.instance.maxScore = noteNum * 5;
+        GManager.instance.maxScore = songData.notes.Length * 5;
 
         ClearNotes(); // Reset the notes lists and remove existing notes objects
 
-        for (int i = 0; i < inputJson.notes.Length; i++)
+        for (int i = 0; i < songData.notes.Length; i++)
         {
-            float kankaku = 60f / (inputJson.BPM * (float)inputJson.notes[i].LPB);
-            float beatSec = kankaku * (float)inputJson.notes[i].LPB;
-            float time = (beatSec * inputJson.notes[i].num / (float)inputJson.notes[i].LPB) + inputJson.offset * 0.01f;
-            NotesTime.Add(time);
-            LaneNum.Add(inputJson.notes[i].block);
-            NoteType.Add(inputJson.notes[i].type);
+            var note = songData.notes[i];
+            float kankaku = 60f / (songData.BPM * note.LPB);
+            float beatSec = kankaku * note.LPB;
+            float time = (beatSec * note.num / (float)note.LPB) + songData.offset * 0.01f;
+            float z = time * GManager.instance.noteSpeed;
 
-            float z = NotesTime[i] * NotesSpeed;
-            NotesObj.Add(Instantiate(noteObj, new Vector3(inputJson.notes[i].block - 1.5f, 0.55f, z), Quaternion.identity));
+            NotesObj.Add(Instantiate(noteObj, new Vector3(note.block - 1.5f, 0.55f, z), Quaternion.identity));
+
+            // Add to LaneNotesTimes and LaneNoteTypes
+            LaneNotesTimes[note.block].Add(time);
+            LaneNoteTypes[note.block].Add(note.type);
         }
     }
 
@@ -74,11 +78,19 @@ public class NotesManager : MonoBehaviour
             Destroy(note);
         }
 
-        // Clear the lists
-        NotesTime.Clear();
-        LaneNum.Clear();
-        NoteType.Clear();
+        // Clear the list
         NotesObj.Clear();
+
+        // Clear LaneNotesTimes and LaneNoteTypes
+        foreach (var laneNotesTime in LaneNotesTimes)
+        {
+            laneNotesTime.Clear();
+        }
+
+        foreach (var laneNoteType in LaneNoteTypes)
+        {
+            laneNoteType.Clear();
+        }
     }
 
     public void ResetNotesData()

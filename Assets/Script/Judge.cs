@@ -34,12 +34,15 @@ public class Judge : MonoBehaviour
         // タッチの入力を処理する
         ProcessTouchInput();
 
-        // ノーツのタイミングをチェックし、ミス判定を行う
-        if (notesManager.NotesTime.Count > 0 && Time.time > notesManager.NotesTime[0] + 0.2f + GManager.instance.StartTime)
-            HandleMiss();
+        // Check the timing of the notes and judge a miss
+        for (int i = 0; i < notesManager.LaneNotesTimes.Length; i++)
+        {
+            if (notesManager.LaneNotesTimes[i].Count > 0 && Time.time > notesManager.LaneNotesTimes[i][0] + 0.2f + GManager.instance.StartTime)
+                HandleMiss(i);
+        }
     }
 
-    private void ProcessKeyboardInput()
+        private void ProcessKeyboardInput()
     {
         // 各レーンのキーボード入力を処理する
         if (Input.GetKeyDown(KeyCode.D) || (Input.GetKey(KeyCode.D) && IsTouchingObject(light1)))
@@ -122,25 +125,18 @@ public class Judge : MonoBehaviour
 
     public void ProcessInput(KeyCode keyCode, int laneIndex, int touchId = -1)
     {
-        // レーンに対応するオフセットを全て取得する
-        List<int> offsets = FindLaneOffsets(laneIndex);
-
-        // オフセットのリストが空であれば処理を中断する
-        if (offsets.Count == 0)
-            return;
-
-        for (int i = offsets.Count - 1; i >= 0; i--)
+        // レーンに対応するノーツが存在するかをチェックする
+        if (notesManager.LaneNotesTimes[laneIndex].Count > 0)
         {
-            int numOffset = offsets[i];
-            float timeLag = GetTimeLag(numOffset);
+            float timeLag = GetTimeLag(laneIndex, 0);
 
             // ノーツに対する判定を行う
             if (timeLag <= 0.2f)
-                HandleJudgement(0, numOffset); // パーフェクト判定
+                HandleJudgement(0, laneIndex); // パーフェクト判定
             else if (timeLag <= 0.3f)
-                HandleJudgement(1, numOffset); // グッド判定
+                HandleJudgement(1, laneIndex); // グッド判定
             else if (timeLag <= 0.4f)
-                HandleJudgement(2, numOffset); // ノーマル判定
+                HandleJudgement(2, laneIndex); // ノーマル判定
         }
 
         // ノーツに対応する音を再生する
@@ -149,48 +145,42 @@ public class Judge : MonoBehaviour
 
 
 
-    private List<int> FindLaneOffsets(int laneIndex)
+    private List<float> FindNoteTimesForLane(int laneIndex)
     {
-        // レーンに対応するオフセットのリストを作成する
-        List<int> offsets = new List<int>();
-
-        for (int i = 0; i < notesManager.LaneNum.Count; i++)
+        // レーンに対応するノートの時間のリストを返す
+        if (laneIndex >= 0 && laneIndex < notesManager.LaneNotesTimes.Length)
         {
-            if (notesManager.LaneNum[i] == laneIndex)
-            {
-                offsets.Add(i);
-            }
+            return notesManager.LaneNotesTimes[laneIndex];
         }
 
-        return offsets;
+        return new List<float>();
     }
 
-    private float GetTimeLag(int numOffset)
+    private float GetTimeLag(int laneIndex, int noteIndex)
     {
         // 現在の時間とノーツの時間の差を取得する
-        return Mathf.Abs(Time.time - (notesManager.NotesTime[numOffset] + GManager.instance.StartTime));
+        return Mathf.Abs(Time.time - (notesManager.LaneNotesTimes[laneIndex][noteIndex] + GManager.instance.StartTime));
     }
 
-    private void HandleJudgement(int judgeIndex, int numOffset)
+    private void HandleJudgement(int judgeIndex, int laneIndex)
     {
         // 判定を表示し、スコアやコンボを更新する
-        Message(judgeIndex, numOffset);
+        Message(judgeIndex, laneIndex);
         IncrementScore(judgeIndex);
         IncrementCombo();
-        DeleteData(numOffset);
+        DeleteData(laneIndex);
         UpdateUI();
     }
 
-    private void HandleMiss()
+    private void HandleMiss(int laneIndex)
     {
         // ミス判定を表示し、スコアやコンボをリセットする
-        Message(3, 0);
+        Message(3, laneIndex);
         GManager.instance.miss++;
         GManager.instance.combo = 0;
-        DeleteData(0);
+        DeleteData(laneIndex);
         UpdateUI();
     }
-
     private void IncrementScore(int judgeIndex)
     {
         // スコアを増加させる
@@ -218,13 +208,13 @@ public class Judge : MonoBehaviour
         GManager.instance.combo++;
     }
 
-    private void DeleteData(int numOffset)
+    private void DeleteData(int laneIndex)
     {
         // 処理済みのノーツデータを削除する
-        notesManager.NotesTime.RemoveAt(numOffset);
-        notesManager.LaneNum.RemoveAt(numOffset);
-        notesManager.NoteType.RemoveAt(numOffset);
+        notesManager.LaneNotesTimes[laneIndex].RemoveAt(0);
+        notesManager.LaneNoteTypes[laneIndex].RemoveAt(0);
     }
+
 
     private void UpdateUI()
     {
@@ -233,12 +223,13 @@ public class Judge : MonoBehaviour
         scoreText.text = GManager.instance.score.ToString();
     }
 
-    private void Message(int judge, int numOffset)
+    private void Message(int judge, int laneIndex)
     {
         // 判定メッセージを表示する
-        if (numOffset >= 0 && numOffset < notesManager.LaneNum.Count)
+        if (laneIndex >= 0 && laneIndex < notesManager.LaneNotesTimes.Length)
         {
-            Instantiate(MessageObj[judge], new Vector3(notesManager.LaneNum[numOffset] - 1.3f, 0.76f, 0.15f), Quaternion.Euler(45, 0, 0));
+            Instantiate(MessageObj[judge], new Vector3(laneIndex - 1.3f, 0.76f, 0.15f), Quaternion.Euler(45, 0, 0));
         }
     }
+
 }
