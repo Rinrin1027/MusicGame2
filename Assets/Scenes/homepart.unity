@@ -1643,29 +1643,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1804755535}
-  - component: {fileID: 1804755534}
+  - component: {fileID: 1804755536}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: SpeedController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1804755534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1804755533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8907a26db55cb4de5a8968711f0fecba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameManager: {fileID: 1016855752385591491, guid: 5dc1954c85a5942b88d877966f3c51bb, type: 3}
-  upButton: {fileID: 87725291}
-  downButton: {fileID: 881893792}
 --- !u!4 &1804755535
 Transform:
   m_ObjectHideFlags: 0
@@ -1681,6 +1666,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1804755536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1804755533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8907a26db55cb4de5a8968711f0fecba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upButton: {fileID: 87725291}
+  downButton: {fileID: 881893792}
 --- !u!1 &1872215396
 GameObject:
   m_ObjectHideFlags: 0
