@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
-    AudioSource audio;
+    public AudioSource audio;
     AudioClip Music;
     string songName;
     bool played;
