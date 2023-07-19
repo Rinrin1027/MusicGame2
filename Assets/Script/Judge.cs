@@ -49,15 +49,15 @@ public class Judge : MonoBehaviour
         {
             ProcessInput(KeyCode.D, 0);
         }
-        else if (Input.GetKeyDown(KeyCode.F) || (Input.GetKey(KeyCode.F) && IsTouchingObject(light2)))
+        if (Input.GetKeyDown(KeyCode.F) || (Input.GetKey(KeyCode.F) && IsTouchingObject(light2)))
         {
             ProcessInput(KeyCode.F, 1);
         }
-        else if (Input.GetKeyDown(KeyCode.J) || (Input.GetKey(KeyCode.J) && IsTouchingObject(light3)))
+        if (Input.GetKeyDown(KeyCode.J) || (Input.GetKey(KeyCode.J) && IsTouchingObject(light3)))
         {
             ProcessInput(KeyCode.J, 2);
         }
-        else if (Input.GetKeyDown(KeyCode.K) || (Input.GetKey(KeyCode.K) && IsTouchingObject(light4)))
+        if (Input.GetKeyDown(KeyCode.K) || (Input.GetKey(KeyCode.K) && IsTouchingObject(light4)))
         {
             ProcessInput(KeyCode.K, 3);
         }
@@ -97,15 +97,15 @@ public class Judge : MonoBehaviour
                 {
                     ProcessInput(KeyCode.D, 0, touch.fingerId);
                 }
-                else if (IsTouchingObject(light2))
+                if (IsTouchingObject(light2))
                 {
                     ProcessInput(KeyCode.F, 1, touch.fingerId);
                 }
-                else if (IsTouchingObject(light3))
+                if (IsTouchingObject(light3))
                 {
                     ProcessInput(KeyCode.J, 2, touch.fingerId);
                 }
-                else if (IsTouchingObject(light4))
+                if (IsTouchingObject(light4))
                 {
                     ProcessInput(KeyCode.K, 3, touch.fingerId);
                 }
@@ -131,11 +131,11 @@ public class Judge : MonoBehaviour
             float timeLag = GetTimeLag(laneIndex, 0);
 
             // ノーツに対する判定を行う
-            if (timeLag <= 0.2f)
+            if (timeLag <= 0.1f)
                 HandleJudgement(0, laneIndex); // パーフェクト判定
-            else if (timeLag <= 0.3f)
+            else if (timeLag <= 0.15f)
                 HandleJudgement(1, laneIndex); // グッド判定
-            else if (timeLag <= 0.4f)
+            else if (timeLag <= 0.2f)
                 HandleJudgement(2, laneIndex); // ノーマル判定
         }
 
@@ -167,7 +167,7 @@ public class Judge : MonoBehaviour
         // 判定を表示し、スコアやコンボを更新する
         Message(judgeIndex, laneIndex);
         IncrementScore(judgeIndex);
-        IncrementCombo();
+        IncrementCombo(judgeIndex);
         DeleteData(laneIndex);
         UpdateUI();
     }
@@ -201,11 +201,24 @@ public class Judge : MonoBehaviour
         GManager.instance.score = (int)Mathf.Round(1000000f * Mathf.Floor(GManager.instance.ratioScore / GManager.instance.maxScore * 1000000f) / 1000000f);
     }
 
-    private void IncrementCombo()
+    private void IncrementCombo(int judgeIndex)
     {
         // コンボ数を増加させる
-        GManager.instance.perfect++;
-        GManager.instance.combo++;
+        switch(judgeIndex)
+        {
+            case 0: // パーフェクトの場合
+                GManager.instance.perfect++;
+                GManager.instance.combo++;
+                break;
+            case 1: // グッドの場合
+                GManager.instance.great++; // greatをカウント
+                GManager.instance.combo++;
+                break;
+            case 2: // ノーマルの場合
+                GManager.instance.bad++; // badをカウント
+                GManager.instance.combo++;
+                break;
+        }
     }
 
     private void DeleteData(int laneIndex)

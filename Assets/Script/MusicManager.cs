@@ -11,6 +11,7 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
+
         GManager.instance.Start = false;
         songName = "Blossom";
         audio = GetComponent<AudioSource>();
@@ -18,6 +19,7 @@ public class MusicManager : MonoBehaviour
         played = false;
 
         StartCoroutine(StartMusicDelay());
+       
     }
 
     IEnumerator StartMusicDelay()
