@@ -1800,7 +1800,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8194d0887b3e24aa2b8343a23a717017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  homeButton: {fileID: 0}
+  homeButton: {fileID: 1090582671}
   notesManager: {fileID: 0}
   scoreGaugeManager: {fileID: 0}
   messageObjects: []
