@@ -131,11 +131,11 @@ public class Judge : MonoBehaviour
             float timeLag = GetTimeLag(laneIndex, 0);
 
             // ノーツに対する判定を行う
-            if (timeLag <= 0.1f)
+            if (timeLag <= 0.15f)
                 HandleJudgement(0, laneIndex); // パーフェクト判定
-            else if (timeLag <= 0.15f)
+            else if (timeLag <= 0.25f)
                 HandleJudgement(1, laneIndex); // グッド判定
-            else if (timeLag <= 0.2f)
+            else if (timeLag <= 0.3f)
                 HandleJudgement(2, laneIndex); // ノーマル判定
         }
 
