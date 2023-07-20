@@ -9,6 +9,7 @@ public class ScoreTextManager : MonoBehaviour
     public TextMeshProUGUI greatText;
     public TextMeshProUGUI badText;
     public TextMeshProUGUI missText;
+    public TextMeshProUGUI ScoreCount;
 
     void Update()
     {
@@ -16,5 +17,6 @@ public class ScoreTextManager : MonoBehaviour
         greatText.text =  GManager.instance.great.ToString();
         badText.text =  GManager.instance.bad.ToString();
         missText.text =  GManager.instance.miss.ToString();
+        ScoreCount.text =  GManager.instance.score.ToString();
     }
 }
