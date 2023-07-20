@@ -37,7 +37,7 @@ public class Judge : MonoBehaviour
         // Check the timing of the notes and judge a miss
         for (int i = 0; i < notesManager.LaneNotesTimes.Length; i++)
         {
-            if (notesManager.LaneNotesTimes[i].Count > 0 && Time.time > notesManager.LaneNotesTimes[i][0] + 0.2f + GManager.instance.StartTime)
+            if (notesManager.LaneNotesTimes[i].Count > 0 && Time.time > notesManager.LaneNotesTimes[i][0] + 0.3f + GManager.instance.StartTime)
                 HandleMiss(i);
         }
     }
