@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MusicManager : MonoBehaviour
 {
@@ -11,7 +12,6 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
-
         GManager.instance.Start = false;
         songName = "Blossom";
         audio = GetComponent<AudioSource>();
@@ -19,7 +19,6 @@ public class MusicManager : MonoBehaviour
         played = false;
 
         StartCoroutine(StartMusicDelay());
-       
     }
 
     IEnumerator StartMusicDelay()
@@ -33,6 +32,16 @@ public class MusicManager : MonoBehaviour
 
     void Update()
     {
-        // Updateメソッドは不要なので削除しても構いません
+        if (played && !audio.isPlaying)
+        {
+            StartCoroutine(LoadSceneWithDelay("Resultpart", 3f));
+            played = false; // Avoid starting the Coroutine multiple times
+        }
+    }
+
+    IEnumerator LoadSceneWithDelay(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(sceneName);
     }
 }
