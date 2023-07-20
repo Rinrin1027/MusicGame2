@@ -33,6 +33,8 @@ public class RetryManager : MonoBehaviour
                 GManager.instance.score = 0;
                 GManager.instance.combo = 0;
                 GManager.instance.perfect = 0;
+                GManager.instance.great = 0;
+                GManager.instance.bad = 0;
                 GManager.instance.miss = 0;
                 GManager.instance.ratioScore = 0;
 
@@ -79,6 +81,8 @@ public class RetryManager : MonoBehaviour
         GManager.instance.score = 0;
         GManager.instance.combo = 0;
         GManager.instance.perfect = 0;
+        GManager.instance.great = 0;
+        GManager.instance.bad = 0;
         GManager.instance.miss = 0;
         GManager.instance.ratioScore = 0;
 
